@@ -1,0 +1,38 @@
+
+name: Build BanglaKey APK
+
+on:
+  push:
+    paths:
+      - '*.zip'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Extract ZIP
+        run: |
+          mkdir project
+          unzip -q "BanglaKey-Android-Starter-v0.3-cloud-build(1).zip" -d project
+
+      - name: Build APK
+        run: |
+          gradle -p project assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BanglaKey-APK
+          path: project/**/build/outputs/apk/debug/*.apk
